@@ -1,0 +1,5 @@
+.env
+1_airflow_wf_orchestration/logs
+1_airflow_wf_orchestration/config
+1_airflow_wf_orchestration/*pyc
+data/*
