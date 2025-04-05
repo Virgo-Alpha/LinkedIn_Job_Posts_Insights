@@ -4,7 +4,7 @@
 # make all: downloads and unzips the data
 # make clean: deletes the zipped and unzipped data in the .data folder
 
-# TODO: Run airflow dags, terraform to create assets, 
+# TODO: Run airflow dags, terraform to create assets, change the make all command action
 
 
 # Download the docker-compose.yml file and build (up -d)

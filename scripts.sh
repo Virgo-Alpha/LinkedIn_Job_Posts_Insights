@@ -42,3 +42,5 @@ pgcli -h localhost -p 5432 -u airflow -d airflow
 
 
 # ! Reproducibility (README), Testing, CI/CD Pipeline
+# ! Files (Benchmark Finamu folder) : README.md, LICENCE.md, 
+#   ./github: CODE_OF_CONDUCT.md, CONTRIBUTING.md, SETTING.md
