@@ -14,7 +14,7 @@ default_args = {
 }
 
 # Define constants
-DATA_DIR = os.path.join(os.environ['AIRFLOW_HOME'], 'data', '.data')
+DATA_DIR = os.path.join('/opt/data', '.data')
 ZIP_FILE = os.path.join(DATA_DIR, 'linkedin-job-postings.zip')
 UNZIP_DIR = os.path.join(DATA_DIR, 'linkedin-job-postings')
 KAGGLE_URL = 'https://www.kaggle.com/api/v1/datasets/download/arshkon/linkedin-job-postings'
@@ -42,6 +42,7 @@ with DAG(
     )
 
     # Task to unzip the downloaded file
+    #  TODO: Debug why the below is not working
     unzip_file = BashOperator(
         task_id='unzip_file',
         bash_command=f'unzip -o {ZIP_FILE} -d {DATA_DIR}',

@@ -4,4 +4,6 @@
 *.cfg
 1_airflow_wf_orchestration/config
 1_airflow_wf_orchestration/*pyc
+1_airflow_wf_orchestration/webserver_config.py
+*.pid
 data/*
