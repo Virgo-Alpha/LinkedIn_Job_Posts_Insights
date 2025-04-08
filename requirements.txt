@@ -1,1 +1,3 @@
-csvlook
+apache-airflow-providers-google
+pyarrow
+fastparquet
