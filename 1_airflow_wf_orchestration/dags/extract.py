@@ -25,7 +25,7 @@ with DAG(
     default_args=default_args,
     description='A DAG to download and unzip data',
     schedule_interval=timedelta(days=1),
-    start_date=datetime(2025, 4, 6),
+    start_date=datetime(2024, 1, 1),
     catchup=False,
 ) as dag:
 

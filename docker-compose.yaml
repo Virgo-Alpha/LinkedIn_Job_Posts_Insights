@@ -75,7 +75,8 @@ x-airflow-common:
     - ./1_airflow_wf_orchestration/dags:/opt/airflow/dags
     - ./1_airflow_wf_orchestration/logs:/opt/airflow/logs
     - ./1_airflow_wf_orchestration/plugins:/opt/airflow/plugins
-    - ~/1_airflow_wf_orchestration/.google/credentials/:/.google/credentials:ro
+    - ./data/.data:/opt/airflow/data/.data
+    - ~/.google/credentials/:/.google/credentials:ro
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
