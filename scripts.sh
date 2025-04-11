@@ -9,6 +9,11 @@ docker compose up -d
 # Connect to postgres with password airflow
 pgcli -h localhost -p 5432 -u airflow -d airflow
 
+# Delete the data/linkedin_data when removing volumes then build again and restart
+# After running the dag, you can view the files by running the commands below
+ docker compose exec airflow-worker bash
+ ls /tmp/linkedin_data/
+
 # TODO:
 # // ? Rename airflow folder to 1_airflow_wf_orchestration
 # *1. Using airflow DAG
@@ -18,8 +23,9 @@ pgcli -h localhost -p 5432 -u airflow -d airflow
 #   - Create a .airflowignore file to ignore some dags and file in the folder
 
 # ! Create the Makefile for local command
+
 # *2. Make a makefile with the following commands:
-#   - make local: Does all the things in 1 above and deletes the downloads
+#  //   - make local: Does all the things in 1 above and deletes the downloads
 #   - make gcs: Does all the things in 1 above and uploads the files to gcs
 #   - make bq: Does all the things in 1 above and uploads the files to gcs and partitions the tables in bq
 # ? - make dbt: makes local and runs dbt

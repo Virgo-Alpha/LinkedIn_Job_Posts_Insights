@@ -191,7 +191,7 @@ services:
         }
         airflow_version=$$(gosu airflow airflow version)
         airflow_version_comparable=$$(ver $${airflow_version})
-        min_airflow_version=2.2.0
+        min_airflow_version=2.7.0
         min_airflow_version_comparable=$$(ver $${min_airflow_version})
         if (( airflow_version_comparable < min_airflow_version_comparable )); then
           echo
@@ -254,7 +254,7 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     user: "0:0"
     volumes:
-      - .:/sources
+      - ./1_airflow_wf_orchestration:/sources
 
   airflow-cli:
     <<: *airflow-common

@@ -1,6 +1,6 @@
 # First-time build can take upto 10 mins.
 
-FROM apache/airflow:2.2.3
+FROM apache/airflow:2.7.0
 
 ENV AIRFLOW_HOME=/opt/airflow
 
@@ -10,21 +10,24 @@ RUN apt-get update -qq && apt-get install vim -qqq
 
 COPY requirements.txt .
 
-RUN apt-get install -qq vim gcc
+RUN apt-get install -qq vim unzip gcc
 
+USER airflow
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN pip install --upgrade pip
-RUN pip install pandas sqlalchemy psycopg2 fastparquet pyarrow
+RUN pip install pandas sqlalchemy psycopg2-binary fastparquet pyarrow
 
 # Ref: https://airflow.apache.org/docs/docker-stack/recipes.html
 
 SHELL ["/bin/bash", "-o", "pipefail", "-e", "-u", "-x", "-c"]
 
 ARG CLOUD_SDK_VERSION=322.0.0
-ENV GCLOUD_HOME=/home/google-cloud-sdk
+ENV GCLOUD_HOME=/opt/google-cloud-sdk
 
 ENV PATH="${GCLOUD_HOME}/bin/:${PATH}"
+
+USER root
 
 RUN DOWNLOAD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" \
     && TMP_DIR="$(mktemp -d)" \

@@ -14,9 +14,9 @@ default_args = {
 }
 
 # Define constants
-DATA_DIR = os.path.join('/opt/data', '.data')
-ZIP_FILE = os.path.join(DATA_DIR, 'linkedin-job-postings.zip')
-UNZIP_DIR = os.path.join(DATA_DIR, 'linkedin-job-postings')
+TMP_DIR = "/tmp/linkedin_data"  # Use a temporary directory
+ZIP_FILE = os.path.join(TMP_DIR, "linkedin-job-postings.zip")
+UNZIP_DIR = os.path.join(TMP_DIR, 'linkedin-job-postings')
 KAGGLE_URL = 'https://www.kaggle.com/api/v1/datasets/download/arshkon/linkedin-job-postings'
 
 # Define the DAG
@@ -32,7 +32,7 @@ with DAG(
     # Task to create the data directory
     create_data_dir = BashOperator(
         task_id='create_data_dir',
-        bash_command=f'mkdir -p {DATA_DIR}',
+        bash_command=f'mkdir -p {TMP_DIR}',
     )
 
     # Task to download the ZIP file
@@ -42,11 +42,21 @@ with DAG(
     )
 
     # Task to unzip the downloaded file
-    #  TODO: Debug why the below is not working
     unzip_file = BashOperator(
         task_id='unzip_file',
-        bash_command=f'unzip -o {ZIP_FILE} -d {DATA_DIR}',
+        bash_command=f'unzip -o {ZIP_FILE} -d {TMP_DIR}',
     )
+
+    # Task to remove the ZIP file after extraction
+    remove_zip = BashOperator(
+        task_id='remove_zip',
+        bash_command=f'rm -f {ZIP_FILE}',
+    )
+
+    # TODO: Add a task to process the unzipped data (input into postgres then upload to a datalake) - need to generate schema for each table
+    # TODO: Using terraform create GCS (Upload the unzipped date) then create BQ and partition appropriately
+    # TODO: dbt transformations
+    # TODO: Dashboard in looker studio using commands (Maybe terraform)
 
     # Set task dependencies
     create_data_dir >> download_zip >> unzip_file
