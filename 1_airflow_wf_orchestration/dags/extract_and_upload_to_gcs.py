@@ -17,11 +17,12 @@ default_args = {
 TMP_DIR = "/tmp/linkedin_data"  # Use a temporary directory
 ZIP_FILE = os.path.join(TMP_DIR, "linkedin-job-postings.zip")
 UNZIP_DIR = os.path.join(TMP_DIR, 'linkedin-job-postings')
+BUCKET_NAME = 'linkedin-job-insights-e1058fc3'
 KAGGLE_URL = 'https://www.kaggle.com/api/v1/datasets/download/arshkon/linkedin-job-postings'
 
 # Define the DAG
 with DAG(
-    'download_and_unzip_data',
+    'download_unzip_and_upload_data',
     default_args=default_args,
     description='A DAG to download and unzip data',
     schedule_interval=timedelta(days=1),
@@ -44,7 +45,7 @@ with DAG(
     # Task to unzip the downloaded file
     unzip_file = BashOperator(
         task_id='unzip_file',
-        bash_command=f'unzip -o {ZIP_FILE} -d {TMP_DIR}',
+        bash_command=f'unzip -o {ZIP_FILE} -d {UNZIP_DIR}',
     )
 
     # Task to remove the ZIP file after extraction
@@ -53,10 +54,19 @@ with DAG(
         bash_command=f'rm -f {ZIP_FILE}',
     )
 
+    upload_to_gcs = BashOperator(
+        task_id='upload_to_gcs',
+        bash_command=(
+            f'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS && '
+            f'gsutil -m cp -r {UNZIP_DIR}/* gs://{BUCKET_NAME}/{UNZIP_DIR}/'
+        ),
+        env={"GOOGLE_APPLICATION_CREDENTIALS": "/opt/airflow/gcloud/service-account.json"},
+    )
+
     # TODO: Add a task to process the unzipped data (input into postgres then upload to a datalake) - need to generate schema for each table
     # TODO: Using terraform create GCS (Upload the unzipped date) then create BQ and partition appropriately
     # TODO: dbt transformations
     # TODO: Dashboard in looker studio using commands (Maybe terraform)
 
     # Set task dependencies
-    create_data_dir >> download_zip >> unzip_file
+    create_data_dir >> download_zip >> unzip_file >> remove_zip >> upload_to_gcs

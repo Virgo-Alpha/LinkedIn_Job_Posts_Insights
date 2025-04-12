@@ -14,6 +14,23 @@ pgcli -h localhost -p 5432 -u airflow -d airflow
  docker compose exec airflow-worker bash
  ls /tmp/linkedin_data/
 
+#  In 0_cloud_infra/terraform create the main.tf and variables.ft files then run the commands
+terraform init
+
+terraform fmt
+
+terraform validate
+
+terraform plan
+
+terraform apply
+
+# Take the output from terraform apply and use it to edit the docker compose file: project_id and bucket_name
+
+# You can use target in terraform to destroy only the storage module
+terraform destroy -target=module.storage
+
+
 # TODO:
 # // ? Rename airflow folder to 1_airflow_wf_orchestration
 # *1. Using airflow DAG

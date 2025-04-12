@@ -39,7 +39,7 @@ $(ZIP_FILE):
 unzip: $(UNZIP_DIR)
 
 $(UNZIP_DIR): $(ZIP_FILE)
-	unzip $(ZIP_FILE) -d $(DATA_DIR)
+	unzip $(ZIP_FILE) -d $(UNZIP_DIR)
 	touch $@
 
 # TODO: Run a DAG for the below

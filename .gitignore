@@ -7,3 +7,8 @@
 1_airflow_wf_orchestration/webserver_config.py
 *.pid
 data/*
+*.tfstate
+*.tfstate.backup
+crash.log
+0_cloud_infra/terraform/.terraform
+0_cloud_infra/gcloud_creds/*
