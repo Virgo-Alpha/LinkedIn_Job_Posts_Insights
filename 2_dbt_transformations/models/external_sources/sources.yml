@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: external_sources
+    schema: linkedin_dataset
+    tables:
+      - name: postings
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/postings.csv"
+          options:
+            format: csv
+            skip_leading_rows: 1
+            autodetect: true
