@@ -1,2 +1,2 @@
 -- Reference the external source as a view
-select * from {{ source('linkedin_dataset', 'postings') }}
+select * from {{ source('linkedin_dataset', 'raw_postings') }}

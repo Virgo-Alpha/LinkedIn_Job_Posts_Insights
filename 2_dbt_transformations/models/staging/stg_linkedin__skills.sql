@@ -9,8 +9,8 @@ WITH source_data AS (
 )
 
 SELECT
-    CAST(skill_abr AS STRING) AS skill_abr,
-    CAST(skill_name AS STRING) AS skill_name
+    CAST(string_field_0 AS STRING) AS skill_abr,
+    CAST(string_field_1 AS STRING) AS skill_name
 FROM source_data
-WHERE skill_abr IS NOT NULL -- Basic filtering
-  AND skill_name IS NOT NULL
+WHERE string_field_0 IS NOT NULL -- Basic filtering
+  AND string_field_1 IS NOT NULL

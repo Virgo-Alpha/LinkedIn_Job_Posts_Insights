@@ -8,7 +8,7 @@ sources:
     # database: linkedin-job-insights-e1058fc3 # Optional: specify if not default target
     tables:
       # --- Postings ---
-      - name: postings
+      - name: raw_postings
         description: "Core job posting details."
         external:
           location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/postings.csv"
@@ -258,7 +258,7 @@ sources:
             format: csv # Redundant, file_format is sufficient
             # autodetect: true
           columns:
-            - name: skill_abr # Abbreviation, e.g., ART
+            - name: skill_abr
               data_type: STRING
               description: "Primary key for skills."
             - name: skill_name

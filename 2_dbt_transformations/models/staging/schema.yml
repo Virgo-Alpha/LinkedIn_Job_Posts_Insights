@@ -46,7 +46,7 @@ models:
       - name: pay_period
         tests:
           - accepted_values:
-              values: ['HOURLY', 'MONTHLY', 'YEARLY', 'ONCE', 'OTHER'] # Add all known values
+              values: ['HOURLY', 'MONTHLY', 'YEARLY', 'ONCE', 'OTHER', null, 'WEEKLY', 'BIWEEKLY'] # Add all known values
               quote: true # Because it's a string
       - name: formatted_work_type
         tests:

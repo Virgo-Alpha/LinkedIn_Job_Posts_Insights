@@ -38,7 +38,7 @@ WITH source_data AS (
         normalized_salary,
         zip_code,
         fips
-    FROM {{ source('linkedin_dataset', 'postings') }}
+    FROM {{ source('linkedin_dataset', 'raw_postings') }}
 )
 
 SELECT
@@ -73,15 +73,15 @@ SELECT
     CAST(application_type AS STRING) AS application_type,
     CAST(posting_domain AS STRING) AS posting_domain,
 
-    -- Flags (Handle potential numeric or string '0'/'1' - adjust if values differ)
-    SAFE_CAST(remote_allowed = 1 AS BOOLEAN) OR SAFE_CAST(remote_allowed = '1' AS BOOLEAN) AS is_remote_allowed,
-    SAFE_CAST(sponsored = 1 AS BOOLEAN) OR SAFE_CAST(sponsored = '1' AS BOOLEAN) AS is_sponsored,
+    -- Flags (Cast to STRING first for robust comparison)
+    TRIM(SAFE_CAST(remote_allowed AS STRING)) = '1' AS is_remote_allowed,
+    TRIM(SAFE_CAST(sponsored AS STRING)) = '1' AS is_sponsored,
 
     -- Timestamps (Using SAFE.PARSE_TIMESTAMP - *Adjust format string as needed!*)
-    {{ safe_parse_timestamp('original_listed_time', '%Y-%m-%d %H:%M:%S') }} AS original_listed_at_utc, -- Example format, adjust!
-    {{ safe_parse_timestamp('expiry', '%Y-%m-%d %H:%M:%S') }} AS expires_at_utc, -- Example format, adjust!
-    {{ safe_parse_timestamp('closed_time', '%Y-%m-%d %H:%M:%S') }} AS closed_at_utc, -- Example format, adjust!
-    {{ safe_parse_timestamp('listed_time', '%Y-%m-%d %H:%M:%S') }} AS listed_at_utc, -- Example format, adjust!
+    TIMESTAMP_SECONDS(SAFE_CAST(original_listed_time AS INT64)) AS original_listed_at_utc,
+    TIMESTAMP_SECONDS(SAFE_CAST(expiry AS INT64)) AS expires_at_utc,
+    TIMESTAMP_SECONDS(SAFE_CAST(closed_time AS INT64)) AS closed_at_utc,
+    TIMESTAMP_SECONDS(SAFE_CAST(listed_time AS INT64)) AS listed_at_utc,
 
     -- Location details from posting
     CAST(zip_code AS STRING) AS posting_zip_code,
