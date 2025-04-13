@@ -35,6 +35,9 @@ terraform destroy -target=module.storage
 # In the gear icon, add 2_dbt_transformations as the subfolder for dbt
 # In the cloud IDE, initialize the project
 
+# to create external tables, make the models then run
+dbt run-operation stage_external_sources
+
 
 # TODO:
 # // ? Rename airflow folder to 1_airflow_wf_orchestration
