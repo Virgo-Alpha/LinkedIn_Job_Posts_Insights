@@ -1,13 +1,265 @@
+# models/sources.yml
+
 version: 2
 
 sources:
-  - name: external_sources
-    schema: linkedin_dataset
+  - name: linkedin_dataset # Renamed for clarity, previously 'external_sources'
+    description: "Raw data sourced from LinkedIn job postings dataset in GCS."
+    # database: linkedin-job-insights-e1058fc3 # Optional: specify if not default target
     tables:
+      # --- Postings ---
       - name: postings
+        description: "Core job posting details."
         external:
           location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/postings.csv"
+          file_format: csv
           options:
-            format: csv
             skip_leading_rows: 1
-            autodetect: true
+            field_delimiter: ","
+            allow_quoted_newlines: true
+            format: csv
+          columns:
+            - name: job_id
+              data_type: INT64
+              description: "Primary key for job postings."
+            - name: company_name
+              data_type: STRING
+              description: "Name of the hiring company (as listed in posting)."
+            - name: title
+              data_type: STRING
+              description: "Job title."
+            - name: description
+              data_type: STRING
+              description: "Full job description text."
+            - name: max_salary
+              data_type: NUMERIC
+            - name: pay_period
+              data_type: STRING # e.g., HOURLY, YEARLY
+            - name: location
+              data_type: STRING
+              description: "Location listed in the job posting (can be less structured)."
+            - name: company_id
+              data_type: INT64
+              description: "Foreign key to the companies table."
+            - name: views
+              data_type: INT64
+            - name: med_salary
+              data_type: NUMERIC
+            - name: min_salary
+              data_type: NUMERIC
+            - name: formatted_work_type
+              data_type: STRING # e.g., Full-time
+            - name: applies
+              data_type: INT64
+            - name: original_listed_time
+              data_type: STRING # Raw timestamp string
+            - name: remote_allowed
+              data_type: STRING # Raw boolean-like string ('0', '1', etc.)
+            - name: job_posting_url
+              data_type: STRING
+            - name: application_url
+              data_type: STRING
+            - name: application_type
+              data_type: STRING # e.g., Offsite Apply
+            - name: expiry
+              data_type: STRING # Raw timestamp string
+            - name: closed_time
+              data_type: STRING # Raw timestamp string
+            - name: formatted_experience_level
+              data_type: STRING # e.g., Mid-Senior level
+            - name: skills_desc
+              data_type: STRING
+              description: "Skills listed in the description (unstructured)."
+            - name: listed_time
+              data_type: STRING # Raw timestamp string
+            - name: posting_domain
+              data_type: STRING
+            - name: sponsored
+              data_type: STRING # Raw boolean-like string
+            - name: work_type
+              data_type: STRING # Shorter code for work type?
+            - name: currency
+              data_type: STRING
+            - name: compensation_type
+              data_type: STRING
+            - name: normalized_salary # Consider if this needs parsing/calculation
+              data_type: NUMERIC
+            - name: zip_code # From posting location, keep as STRING
+              data_type: STRING
+            - name: fips # From posting location, keep as STRING
+              data_type: STRING
+
+      # --- Companies ---
+      - name: companies
+        description: "Details about the companies."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/companies/companies.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: company_id
+              data_type: INT64
+              description: "Primary key for companies."
+            - name: name
+              data_type: STRING
+            - name: description
+              data_type: STRING
+            - name: company_size # e.g., 1, 2, 3 representing ranges
+              data_type: INT64
+            - name: state
+              data_type: STRING
+            - name: country
+              data_type: STRING
+            - name: city
+              data_type: STRING
+            - name: zip_code # Company address zip, keep as STRING
+              data_type: STRING
+            - name: address
+              data_type: STRING
+            - name: url
+              data_type: STRING
+
+      - name: company_industries
+        description: "Mapping table between companies and industries."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/companies/company_industries.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: company_id
+              data_type: INT64
+              description: "Foreign key to companies."
+            - name: industry # This seems to be the industry name directly? Check data. If ID, map later.
+              data_type: STRING
+              description: "Industry associated with the company."
+
+      - name: company_specialities
+        description: "Mapping table between companies and their specialities."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/companies/company_specialities.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: company_id
+              data_type: INT64
+              description: "Foreign key to companies."
+            - name: speciality
+              data_type: STRING
+
+      - name: employee_counts
+        description: "Employee and follower counts for companies over time."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/companies/employee_counts.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: company_id
+              data_type: INT64
+              description: "Foreign key to companies."
+            - name: employee_count
+              data_type: INT64
+            - name: follower_count
+              data_type: INT64
+            - name: time_recorded # Appears to be epoch timestamp
+              data_type: INT64
+
+      # --- Job Specifics ---
+      - name: benefits
+        description: "Benefits associated with job postings."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/jobs/benefits.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: job_id
+              data_type: INT64
+              description: "Foreign key to postings."
+            - name: inferred # Boolean-like flag
+              data_type: STRING
+            - name: type # Benefit name, e.g., Medical insurance
+              data_type: STRING
+
+      - name: job_industries
+        description: "Mapping between job postings and industries (using industry ID)."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/jobs/job_industries.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: job_id
+              data_type: INT64
+              description: "Foreign key to postings."
+            - name: industry_id
+              data_type: INT64
+              description: "Foreign key to the industries mapping table."
+
+      - name: job_skills
+        description: "Mapping between job postings and skills (using skill abbreviation)."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/jobs/job_skills.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: job_id
+              data_type: INT64
+              description: "Foreign key to postings."
+            - name: skill_abr # Abbreviation, e.g., MRKT
+              data_type: STRING
+              description: "Foreign key to the skills mapping table."
+
+      - name: salaries # Seems redundant with postings table, but may have more detail/history?
+        description: "Salary details potentially linked to job postings."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/jobs/salaries.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: salary_id # Primary key for this table
+              data_type: INT64
+            - name: job_id
+              data_type: INT64
+              description: "Foreign key to postings."
+            - name: max_salary
+              data_type: NUMERIC
+            - name: med_salary
+              data_type: NUMERIC
+            - name: min_salary
+              data_type: NUMERIC
+            - name: pay_period
+              data_type: STRING
+            - name: currency
+              data_type: STRING
+            - name: compensation_type
+              data_type: STRING
+
+      # --- Mappings ---
+      - name: industries
+        description: "Mapping table for industry IDs to names."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/mappings/industries.csv"
+          file_format: csv
+          options: { skip_leading_rows: 1, field_delimiter: ",", allow_quoted_newlines: true, format: csv }
+          columns:
+            - name: industry_id
+              data_type: INT64
+              description: "Primary key for industries."
+            - name: industry_name
+              data_type: STRING
+
+      - name: skills
+        description: "Mapping table for skill abbreviations to names."
+        external:
+          location: "gs://linkedin-job-insights-e1058fc3/linkedin-job-insights-datalake/mappings/skills.csv"
+          file_format: csv
+          options: # Use multiline format for clarity
+            skip_leading_rows: 1
+            field_delimiter: ","
+            allow_quoted_newlines: true
+            format: csv # Redundant, file_format is sufficient
+            # autodetect: true
+          columns:
+            - name: skill_abr # Abbreviation, e.g., ART
+              data_type: STRING
+              description: "Primary key for skills."
+            - name: skill_name
+              data_type: STRING

@@ -1,0 +1,195 @@
+# Relationships, constraints and tests
+
+version: 2
+
+models:
+  - name: stg_linkedin__postings
+    description: Staged job posting data with basic cleaning and type casting.
+    columns:
+      - name: job_id
+        description: Primary key for job postings.
+        tests:
+          - unique
+          - not_null
+      - name: company_id
+        description: Foreign key to companies table.
+        tests:
+          - not_null # Assuming a posting always has a company
+          - relationships: # Test FK integrity
+              to: ref('stg_linkedin__companies')
+              field: company_id
+      - name: job_title
+        description: The title of the job.
+        tests:
+          - not_null
+      - name: original_listed_at_utc
+        description: Parsed timestamp when the job was originally listed.
+      - name: views
+        description: Number of views for the posting.
+        tests:
+          - dbt_utils.expression_is_true: # Example custom test logic (positive value)
+              expression: ">= 0"
+      - name: applies
+        description: Number of applications for the posting.
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"} # Reuse positive value check
+      - name: max_salary
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+      - name: med_salary
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+      - name: min_salary
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+          # Could add test: min_salary <= max_salary if both not null
+      - name: pay_period
+        tests:
+          - accepted_values:
+              values: ['HOURLY', 'MONTHLY', 'YEARLY', 'ONCE', 'OTHER'] # Add all known values
+              quote: true # Because it's a string
+      - name: formatted_work_type
+        tests:
+          - not_null # Important for analysis Q3, Q8
+          - accepted_values:
+              values: ['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship', 'Volunteer', 'Other'] # Adjust as needed
+
+
+  - name: stg_linkedin__companies
+    description: Staged company data.
+    columns:
+      - name: company_id
+        description: Primary key for companies.
+        tests:
+          - unique
+          - not_null
+      - name: company_name
+        tests:
+          - not_null
+      - name: country
+        description: Country where the company is based. Useful for geo analysis.
+      - name: state
+        description: State/province where the company is based.
+      - name: company_size_category
+        description: Encoded company size (e.g., 1=1-10, 2=11-50...). Needs decoding for analysis Q5.
+
+
+  - name: stg_linkedin__company_industries
+    description: Mapping from company to industry name.
+    columns:
+      - name: company_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__companies')
+              field: company_id
+      # Add FK test if industry name should map to industries.industry_name (seems unlikely based on data)
+
+
+  - name: stg_linkedin__employee_counts
+    description: Staged employee/follower counts over time.
+    columns:
+      - name: company_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__companies')
+              field: company_id
+      - name: employee_count
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+      - name: follower_count
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+      - name: recorded_at_utc
+        tests:
+          - not_null
+
+  - name: stg_linkedin__benefits
+    description: Staged job benefits mapping.
+    columns:
+      - name: job_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__postings')
+              field: job_id
+      - name: benefit_type # Benefit name
+        tests:
+          - not_null
+
+  - name: stg_linkedin__job_industries
+    description: Mapping from job to industry ID.
+    columns:
+      - name: job_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__postings')
+              field: job_id
+      - name: industry_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__industries')
+              field: industry_id
+              severity: warn
+
+  - name: stg_linkedin__job_skills
+    description: Mapping from job to skill abbreviation.
+    columns:
+      - name: job_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__postings')
+              field: job_id
+      - name: skill_abr
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_linkedin__skills')
+              field: skill_abr
+
+  - name: stg_linkedin__salaries # Consider if this table is needed or if postings table suffices
+    description: Staged salary details.
+    columns:
+      - name: salary_id
+        tests:
+          - unique
+          - not_null
+      - name: job_id
+        tests:
+          - not_null
+          # Don't add relationship test to postings if a salary record might exist without a posting record
+      - name: max_salary
+        tests:
+          - dbt_utils.expression_is_true: {expression: ">= 0"}
+      # Add similar tests for med/min salary and pay_period accepted_values
+
+
+  - name: stg_linkedin__industries
+    description: Dimension table for industry IDs and names.
+    columns:
+      - name: industry_id
+        description: Primary key for industries.
+        tests:
+          - unique
+          - not_null
+      - name: industry_name
+        tests:
+          - unique # Assuming names are unique
+          - not_null
+
+  - name: stg_linkedin__skills
+    description: Dimension table for skill abbreviations and names.
+    columns:
+      - name: skill_abr
+        description: Primary key for skills (abbreviation).
+        tests:
+          - unique
+          - not_null
+      - name: skill_name
+        tests:
+          - unique # Assuming names are unique
+          - not_null
