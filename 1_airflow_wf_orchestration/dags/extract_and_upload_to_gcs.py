@@ -57,10 +57,17 @@ with DAG(
     upload_to_gcs = BashOperator(
         task_id='upload_to_gcs',
         bash_command=(
-            f'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS && '
-            f'gsutil -m cp -r {UNZIP_DIR}/* gs://{BUCKET_NAME}/{UNZIP_DIR}/'
+            '/opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS && '
+            '/opt/google-cloud-sdk/bin/gsutil -m -o "GSUtil:parallel_composite_upload_threshold=50M" cp -r {unzip}/* gs://{bucket}/linkedin-job-insights-datalake/'
+        ).format(
+            unzip=UNZIP_DIR,
+            bucket=BUCKET_NAME,
         ),
-        env={"GOOGLE_APPLICATION_CREDENTIALS": "/opt/airflow/gcloud/service-account.json"},
+        execution_timeout=timedelta(minutes=45),
+        env={
+            "GOOGLE_APPLICATION_CREDENTIALS": "/opt/airflow/gcloud/service-account.json",
+            "CLOUDSDK_PYTHON": "/usr/bin/python3"
+        },
     )
 
     # TODO: Add a task to process the unzipped data (input into postgres then upload to a datalake) - need to generate schema for each table
