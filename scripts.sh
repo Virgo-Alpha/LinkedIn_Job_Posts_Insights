@@ -30,6 +30,11 @@ terraform apply
 # You can use target in terraform to destroy only the storage module
 terraform destroy -target=module.storage
 
+# DBT
+# Create project, upload the service account json and add this repo
+# In the gear icon, add 2_dbt_transformations as the subfolder for dbt
+# In the cloud IDE, initialize the project
+
 
 # TODO:
 # // ? Rename airflow folder to 1_airflow_wf_orchestration
@@ -51,13 +56,13 @@ terraform destroy -target=module.storage
 #   - make all: Runs both the make local and make prod
 
 # *2. Terraform to create the assets in the 0_cloud_infra folder
-#   - Create the GCS Bucket and BigQuery Dataset (GCS Cred)
-#   - Using airflow DAG, upload the unzipped files to the GCS bucket
+#   // - Create the GCS Bucket and BigQuery Dataset (GCS Cred)
+#   // - Using airflow DAG, upload the unzipped files to the GCS bucket
 #   - Delete the zip and the unzipped folder
 #   - Create the tables in BigQuery and partition them appropriately using Airflow / terraform. Import from GCS
 
 # *3. Create the dbt models in a new folder e.g., 2_dbt_transformations
-#   - Create models to traform the data in preparation for the dashboard
+#   - Create models to transform the data in preparation for the dashboard
 
 # *4. Create the dashboard in a new folder e.g., 3_looker_studio_dashboard
 #   - Create the dashboard using Looker Studio (try code but also use the UI)
