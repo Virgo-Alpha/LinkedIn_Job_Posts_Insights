@@ -78,10 +78,14 @@ SELECT
     TRIM(SAFE_CAST(sponsored AS STRING)) = '1' AS is_sponsored,
 
     -- Timestamps (Using SAFE.PARSE_TIMESTAMP - *Adjust format string as needed!*)
-    TIMESTAMP_SECONDS(SAFE_CAST(original_listed_time AS INT64)) AS original_listed_at_utc,
-    TIMESTAMP_SECONDS(SAFE_CAST(expiry AS INT64)) AS expires_at_utc,
-    TIMESTAMP_SECONDS(SAFE_CAST(closed_time AS INT64)) AS closed_at_utc,
-    TIMESTAMP_SECONDS(SAFE_CAST(listed_time AS INT64)) AS listed_at_utc,
+    original_listed_time AS original_listed_time,
+    expiry AS expiry_time,
+    closed_time AS closed_time,
+    listed_time AS listed_time,
+
+    -- TIMESTAMP_SECONDS(SAFE_CAST(expiry AS INT64)) AS expires_at_utc,
+    -- TIMESTAMP_SECONDS(SAFE_CAST(closed_time AS INT64)) AS closed_at_utc,
+    -- TIMESTAMP_SECONDS(SAFE_CAST(listed_time AS INT64)) AS listed_at_utc,
 
     -- Location details from posting
     CAST(zip_code AS STRING) AS posting_zip_code,
