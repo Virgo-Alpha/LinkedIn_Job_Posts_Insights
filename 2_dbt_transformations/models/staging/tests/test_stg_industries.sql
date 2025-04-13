@@ -1,0 +1,1 @@
+SELECT 1 AS test_col FROM {{ source('linkedin_dataset', 'industries') }} LIMIT 1
