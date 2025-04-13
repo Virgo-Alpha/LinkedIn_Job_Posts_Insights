@@ -45,3 +45,6 @@ models:
       +materialized: table
     external_sources:
       +materialized: view
+    marts:
+      core:
+        materialized: table

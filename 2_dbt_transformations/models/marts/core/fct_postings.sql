@@ -1,12 +1,12 @@
 {{
   config(
     materialized='table',
-    partition_by={
-      "field": "original_listed_at_utc",
-      "data_type": "timestamp",
-      "granularity": "month"
-    },
-    cluster_by=['company_id', 'formatted_work_type', 'formatted_experience_level', 'company_country', 'company_state']
+    cluster_by=[
+        'company_id',
+        'formatted_work_type',
+        'formatted_experience_level',
+        'company_country'
+        ]
   )
 }}
 
@@ -45,7 +45,7 @@ job_industries AS (
 job_benefits AS (
      SELECT
         job_id,
-        ARRAY_AGG(DISTINCT type IGNORE NULLS) AS benefits
+        ARRAY_AGG(DISTINCT benefit_type IGNORE NULLS) AS benefits
     FROM {{ ref('stg_linkedin__benefits') }}
     GROUP BY 1
 ),
@@ -110,11 +110,11 @@ SELECT
     p.is_sponsored,
 
     -- Timestamps
-    p.original_listed_at_utc,
-    p.expires_at_utc,
-    p.closed_at_utc,
-    p.listed_at_utc,
-    TIMESTAMP_DIFF(p.closed_at_utc, p.original_listed_at_utc, DAY) AS days_to_close, -- For Q9
+    p.original_listed_time,
+    p.expiry_time,
+    p.closed_time,
+    p.listed_time,
+    -- TIMESTAMP_DIFF(p.closed_time, p.original_listed_time, DAY) AS days_to_close, -- For Q9
 
     -- Aggregated Attributes
     js.skill_names,
@@ -127,3 +127,7 @@ LEFT JOIN salaries s ON p.job_id = s.job_id
 LEFT JOIN job_skills js ON p.job_id = js.job_id
 LEFT JOIN job_industries ji ON p.job_id = ji.job_id
 LEFT JOIN job_benefits jb ON p.job_id = jb.job_id
+
+-- 🔍 Filter out invalid timestamps
+WHERE p.original_listed_time IS NOT NULL
+  AND p.closed_time IS NOT NULL

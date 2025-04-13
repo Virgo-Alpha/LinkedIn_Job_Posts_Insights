@@ -1,3 +1,6 @@
-{% macro safe_parse_timestamp(column_name, format_string='%Y-%m-%d %H:%M:%S %Z') %}
-    SAFE.PARSE_TIMESTAMP('{{ format_string }}', {{ column_name }})
+{% macro safe_timestamp_seconds(column) %}
+  CASE 
+    WHEN SAFE_CAST({{ column }} AS INT64) BETWEEN 0 AND 253402300799 THEN TIMESTAMP_SECONDS(SAFE_CAST({{ column }} AS INT64))
+    ELSE NULL
+  END
 {% endmacro %}
