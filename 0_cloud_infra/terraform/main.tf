@@ -32,11 +32,11 @@ module "iam" {
 }
 
 # TODO: Partition the below before applying
-# module "bigquery" {
-#   source     = "./modules/bigquery"
-#   project_id = google_project.project.project_id
-#   dataset_id = "linkedin_dataset"
-# }
+module "bigquery" {
+  source     = "./modules/bigquery"
+  project_id = google_project.project.project_id
+  dataset_id = "linkedin_dataset"
+}
 
 module "storage" {
   source       = "./modules/storage"

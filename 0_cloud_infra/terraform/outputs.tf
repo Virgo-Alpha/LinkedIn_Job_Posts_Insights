@@ -18,3 +18,10 @@ output "bucket_id" {
   value = module.storage.bucket_id
 }
 
+output "bigquery_dataset_id" {
+  value = module.bigquery.dataset_id
+}
+
+output "bigquery_dataset_name" {
+  value = module.bigquery.dataset_name
+}
