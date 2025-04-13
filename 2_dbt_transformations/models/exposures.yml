@@ -1,0 +1,25 @@
+version: 2
+
+exposures:
+  - name: linkedin_job_insights_dashboard
+    type: dashboard
+    maturity: medium
+    url: https://lookerstudio.google.com/ # Replace with your actual dashboard URL later
+    description: >
+      Dashboard analyzing LinkedIn job posting trends, salaries, company sizes, locations,
+      and engagement metrics based on the processed dataset. Addresses questions regarding
+      salary trends, work type distribution, remote work engagement, company size impact,
+      top titles, hiring duration, and geographical distribution.
+
+    owner:
+      name: Your Name / Team Name
+      email: your.email@example.com
+
+    depends_on:
+      - ref('fct_postings')
+      - ref('dim_companies')
+      # Add other dim tables if directly used in charts
+      - ref('dim_skills')
+      - ref('dim_industries')
+
+    tags: ['lookerstudio', 'linkedin', 'jobs', 'hr']
