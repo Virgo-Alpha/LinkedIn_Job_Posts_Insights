@@ -49,6 +49,8 @@ docker-compose up -d
 ```
 Then visit [http://localhost:8080](http://localhost:8080) to run the DAG.
 
+![Screenshot from 2025-04-14 11-42-02](https://github.com/user-attachments/assets/b92a9280-80ce-477b-937b-c9ac3b3bc123)
+
 ---
 
 ## 📊 4. Data Warehouse (BigQuery)
