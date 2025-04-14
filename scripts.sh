@@ -38,6 +38,8 @@ terraform destroy -target=module.storage
 # to create external tables, make the models then run
 dbt run-operation stage_external_sources
 
+dbt build # tests and doesn't just run the models
+
 
 # TODO:
 # // ? Rename airflow folder to 1_airflow_wf_orchestration
