@@ -1,4 +1,4 @@
-![models](https://github.com/user-attachments/assets/37263e8c-329e-4f9b-986a-4795dbab5291)# LinkedIn Job Posts Insights
+# LinkedIn Job Posts Insights
 Comprehensive data pipeline and dashboard for analyzing LinkedIn job postings (2023-2024).
 
 ---
