@@ -1,4 +1,4 @@
-# LinkedIn Job Posts Insights
+![models](https://github.com/user-attachments/assets/37263e8c-329e-4f9b-986a-4795dbab5291)# LinkedIn Job Posts Insights
 Comprehensive data pipeline and dashboard for analyzing LinkedIn job postings (2023-2024).
 
 ---
@@ -83,7 +83,8 @@ dbt build
 
 Please see my models and tables below:
 
-[IMAGE]
+![models](https://github.com/user-attachments/assets/52051e2a-c579-4f46-b878-65360a2be076)
+
 
 > Use dbt Cloud IDE for dependencies & permissions. Project uses GCS + BigQuery access via service account.
 
@@ -92,7 +93,8 @@ Please see my models and tables below:
 ## 📊 6. Dashboard (Looker Studio)
 The dashboard visualizes insights based on the `fct_postings` fact table.
 
-[IMAGE]
+![Screenshot from 2025-04-14 11-31-33](https://github.com/user-attachments/assets/55c58d11-8c35-402f-8809-7926d152d2f1)
+
 
 **Link to Dashboard**: [Open in Looker Studio](https://lookerstudio.google.com/reporting/e23b48ee-def1-4ac3-8a8a-f45df413dbf2)
 
@@ -126,7 +128,8 @@ dbt build
 ## ✅ 8. Testing
 Some dbt tests added for schema + uniqueness + nulls.
 
-[IMAGE of dbt test results]
+![Screenshot from 2025-04-14 11-35-07](https://github.com/user-attachments/assets/effe899a-33fb-4331-9743-21515c146c76)
+
 
 > Future: Add CI testing via GitHub Actions and unit tests for DAGs.
 
