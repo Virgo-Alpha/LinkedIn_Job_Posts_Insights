@@ -98,7 +98,7 @@ The dashboard visualizes insights based on the `fct_postings` fact table.
 ![Screenshot from 2025-04-14 11-31-33](https://github.com/user-attachments/assets/55c58d11-8c35-402f-8809-7926d152d2f1)
 
 
-**Link to Dashboard**: [Open in Looker Studio]([https://lookerstudio.google.com/reporting/e23b48ee-def1-4ac3-8a8a-f45df413dbf2](https://lookerstudio.google.com/s/r0sYLY6crpE))
+**Link to Dashboard**: [Open in Looker Studio](https://lookerstudio.google.com/s/r0sYLY6crpE)
 
 ---
 
