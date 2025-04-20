@@ -1,7 +1,7 @@
 # LinkedIn Job Posts Insights
 This is a Data Engineering project that uses Docker, Terraform, GCS, BigQuery, Airflow, dbt and Looker studio to turn data into actionable insights in terms of career choice and job prospects using LinkedIn job postings from 2023-2024.
 
-![Data Engineering on the Cloud_ A Summary](https://github.com/user-attachments/assets/5db8126f-4ba6-4966-830b-0abdd73e6429)
+![Data Engineering on the Cloud_ A Summary](https://github.com/user-attachments/assets/5dfe88ff-3337-4abf-b4e2-72560ccd0853)
 
 ---
 
